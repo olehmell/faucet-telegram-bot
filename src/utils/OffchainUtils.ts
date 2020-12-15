@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { newLogger/* , nonEmptyStr  */} from '@subsocial/utils'
+import { newLogger} from '@subsocial/utils'
 import { Activity as OldActivity } from '@subsocial/types'
 import { offchainUrl } from '../env'
 require('dotenv').config()
@@ -18,15 +18,8 @@ function getOffchainUrl (subUrl: string): string {
 const createActivitiesUrlByAddress = (address: string, entity: 'feed' | 'notifications' | 'activities') =>
   getOffchainUrl(`/${entity}/${address}`)
 
-
-// type ActivityType = 'follows' | 'posts' | 'comments' | 'reactions' | 'spaces' | 'counts'
-
 const createNotificationsUrlByAddress = (address: string) => createActivitiesUrlByAddress(address, 'notifications')
 const createFeedUrlByAddress = (address: string) => createActivitiesUrlByAddress(address, 'feed')
-// const createActivityUrlByAddress = (address: string, activityType?: ActivityType) => {
-//   const type = nonEmptyStr(activityType) ? `/${activityType}` : ''
-//   return `${createActivitiesUrlByAddress(address, 'activities')}${type}`
-// }
 
 const axiosRequest = async (url: string) => {
   try {

@@ -1,6 +1,6 @@
 import { PostId } from '@subsocial/types/substrate/interfaces';
-import { createHrefForPost } from '../Notifications/Notifications';
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { createHrefForPost } from '../utils/utils';
 
 export const getPostPreview = async (postId: string): Promise<string> => {
 	const subsocial = await resolveSubsocialApi()
