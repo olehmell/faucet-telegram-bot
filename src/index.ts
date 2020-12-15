@@ -1,53 +1,77 @@
-import Telegraf from 'telegraf'
-import * as Extra from 'telegraf/extra'
-import * as Markup from 'telegraf/markup'
-import { Api } from '@subsocial/api/substrateConnect';
-import { registry } from '@subsocial/types/substrate/registry'
-import { ApiPromise } from '@polkadot/api';
-import { formatBalance } from '@polkadot/util';
-import AccountId from '@polkadot/types/generic/AccountId';
+import { Keyboard } from 'telegram-keyboard'
+import { SceneGenerator } from './scenes';
+import { getNotifications, getAccountByChatId, getNewsFeed } from './utils/OffchainUtils';
+import { TOKEN } from './env';
+import { getPostPreview } from './Feed/Feed';
+import { Markup } from 'telegraf';
+import { TelegrafContext } from 'telegraf/typings/context';
+import { createNotificationMessage } from './Notifications/Notifications';
+const Telegraf = require('telegraf')
+const {
+  Stage,
+  session
+} = Telegraf
 
-let api: ApiPromise;
-
-require('dotenv').config()
-
-const TOKEN = process.env.TOKEN
-const SUBSTRATE_URL = process.env.SUBSTRATE_URL
 const bot = new Telegraf(TOKEN)
 
-bot.use(Telegraf.log())
+const scenesGen = new SceneGenerator()
+const getBalance = scenesGen.getBalanceScene()
 
-bot.command('start', (ctx) => {
-  return ctx.reply('Share your phone:', Extra.markup((markup) => {
-    return markup.resize()
-      .keyboard([
-        markup.contactRequestButton('Send contact')
-      ])
-  }))
-})
+// bot.use(Telegraf.log())
 
-bot.hears(/[A-Za-z\d@$!%*?&_-]{48,48}$/, async ctx => {
-  const message = ctx.message.text
-  try {
-    const address = new AccountId(registry, message)
-    console.log('Address:', address)
-    const ballance = await api.derive.balances.all(address)
-    ctx.reply(`Your balance: ${formatBalance(ballance.freeBalance.toString())}`)
-  } catch (err) {
-    ctx.reply(`Opps! Some problem: ${err}`)
-  }  
-})
+const stage = new Stage([getBalance])
 
-bot.on('contact', ctx => ctx.reply('Thanks. What is your account address?', Extra.markup(
-     Markup.keyboard([])
-      .oneTime()
-      .resize()
-      .extra()
-  )))
+bot.use(session())
+bot.use(stage.middleware())
 
-const main = async () => {
-  api = await Api.connect(SUBSTRATE_URL)
-  bot.launch()
+
+let offset = 0
+
+const loadMore = Markup.inlineKeyboard([
+  Markup.callbackButton('Load more', 'loadMore'),
+]).extra()
+
+export const mainMenuKeyboard = Keyboard.make([
+  ['🔔 My notifications', '📰 My feed']
+]).reply()
+
+const showNotification = async (ctx: TelegrafContext) => {
+  const account = await getAccountByChatId(ctx.chat.id)
+  const notifs = await getNotifications(account, offset, 5)
+  const notifsMessage = await createNotificationMessage(notifs)
+  if (notifsMessage.length) {
+    for (const notification of notifsMessage) {
+      await ctx.telegram.sendMessage(ctx.chat.id, notification, { parse_mode: 'HTML' })
+    }
+    offset += 5
+    ctx.reply('Load more notification', loadMore)
+  } else {
+    offset = 0
+    ctx.reply("That's all folks")
+  }
 }
 
-main()
+bot.start((ctx) => {
+  ctx.reply('Hi in subsocial telegram bot')
+  ctx.scene.enter('address')
+})
+
+bot.hears('🔔 My notifications', async (ctx) => {
+  await showNotification(ctx)
+})
+
+bot.action('loadMore', async (ctx) => {
+  await showNotification(ctx)
+})
+
+bot.hears('📰 My feed', async (ctx) => {
+  const account = await getAccountByChatId(ctx.chat.id)
+  const feed = await getNewsFeed(account, 0, 10)
+  feed.map(async (x) => ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(x.post_id), { parse_mode: 'HTML' }))
+})
+
+// bot.hears('Back', (ctx) => {
+//   return ctx.reply('Simple Keyboard', mainMenuKeyboard)
+// })
+
+bot.launch()
