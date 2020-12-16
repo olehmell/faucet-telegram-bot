@@ -5,9 +5,9 @@ import { offchainUrl } from '../env'
 require('dotenv').config()
 
 export type Activity = Omit<OldActivity, 'id'> & {
-    block_number: string,
-    event_index: number
-  }
+  block_number: string,
+  event_index: number
+}
 
 const log = newLogger('TelegramRequests')
 

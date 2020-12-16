@@ -1,5 +1,6 @@
 import { appsUrl } from '../env'
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { SpaceId } from '@subsocial/types/substrate/interfaces';
 
 export const createHrefForPost = (spaceId: string, postId: string, name: string) => {
 	return `<a href="${appsUrl}/${spaceId}/${postId}">${name}</a>`
@@ -14,7 +15,11 @@ export const createHrefForAccount = (followingId: string, name: string) => {
 }
 
 export const createMessageForNotifs = (date: string, account: string, msg: string, link: string) => {
-	return date + ' ' + account + " <b>" + msg + "</b> " + link + '\n'
+	return account + " <b>" + msg + "</b> " + link + "\n" + date
+}
+
+export const createMessageForFeeds = (link: string, account: string, spaceName: string, date: string) => {
+	return link + " by " + account + " in space " + spaceName + "\n" + date
 }
 
 export const getAccountName = async (account: string): Promise<string> => {
@@ -25,5 +30,14 @@ export const getAccountName = async (account: string): Promise<string> => {
 		return name
 	}
 	else return account
+}
 
+export const getSpaceName = async (spaceId: SpaceId): Promise<string> => {
+	const subsocial = await resolveSubsocialApi()
+	const space = await subsocial.findSpace({ id: spaceId })
+	if (space.content) {
+		const name = space.content.name
+		return name
+	}
+	else return ''
 }
