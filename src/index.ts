@@ -1,12 +1,11 @@
 import { Keyboard } from 'telegram-keyboard'
 import { SceneGenerator } from './scenes';
-import { getNotifications, getAccountByChatId, getNewsFeed } from './utils/OffchainUtils';
 import { TOKEN } from './env';
-import { getPostPreview } from './Feed/Feed';
-import { Markup } from 'telegraf';
+import { showFeed } from './Feed/Feed';
 import { TelegrafContext } from 'telegraf/typings/context';
-import { createNotificationMessage } from './Notifications/Notifications';
+import { showNotification } from './Notifications/Notifications';
 import { resloveWebSocketConnection } from './ws';
+import { showProfile } from './Profile/Profile';
 
 const Telegraf = require('telegraf')
 const {
@@ -21,16 +20,8 @@ export const bot = new Telegraf(TOKEN)
 let notifOffset = 0
 let feedOffset = 0
 
-const loadMoreNotif = Markup.inlineKeyboard([
-  Markup.callbackButton('Load more', 'loadMoreNotifs'),
-])
-
-const loadMoreFeed = Markup.inlineKeyboard([
-  Markup.callbackButton('Load more', 'loadMoreFeeds'),
-])
-
 export const mainMenuKeyboard = Keyboard.make([
-  ['📰 My feed', '🔔 My notifications'],
+  ['📰 Feed', '🔔 Notifications'],
   ['👤 Profile', '⚙️ Settings']
 ]).reply()
 
@@ -49,75 +40,28 @@ bot.start(async (ctx) => {
 
 resloveWebSocketConnection()
 
-bot.hears('🔔 My notifications', async (ctx) => {
+bot.hears('🔔 Notifications', async (ctx) => {
   notifOffset = 0
-  await showNotification(ctx)
+  notifOffset = await showNotification(ctx, notifOffset)
+
 })
 
 bot.action('loadMoreNotifs', async (ctx) => {
-  return await showNotification(ctx)
+  notifOffset =  await showNotification(ctx, notifOffset)
 })
 
-bot.hears('📰 My feed', async (ctx: TelegrafContext) => {
-  notifOffset = 0
-  return await showFeed(ctx)
+bot.hears('📰 Feed', async (ctx: TelegrafContext) => {
+  feedOffset = 0
+  feedOffset = await showFeed(ctx, feedOffset)
 })
 
 bot.action('loadMoreFeeds', async (ctx) => {
-  return await showFeed(ctx)
+  feedOffset =  await showFeed(ctx, feedOffset)
+})
+
+bot.hears('👤 Profile', async (ctx) => {
+  ctx.telegram.sendMessage(ctx.chat.id, "This will be your profile")
+  await showProfile(ctx)
 })
 
 bot.launch()
-
-const showNotification = async (ctx: TelegrafContext) => {
-  const account = await getAccountByChatId(ctx.chat.id)
-
-  if (account) {
-    const notifs = await getNotifications(account, notifOffset, 5)
-    const notifsMessage = await createNotificationMessage(notifs)
-
-    if (notifsMessage.length) {
-      for (let i = 0; i < notifsMessage.length; i++) {
-        const notification = notifsMessage[i]
-
-        if (i == notifsMessage.length - 1)
-          await ctx.telegram.sendMessage(ctx.chat.id, notification, {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true,
-            reply_markup: loadMoreNotif
-          })
-        else
-          await ctx.telegram.sendMessage(ctx.chat.id, notification, {
-            parse_mode: 'HTML',
-            disable_web_page_preview: true
-          })
-      }
-      notifOffset += 5
-    } else {
-      notifOffset = 0
-      ctx.reply("That's all folks", mainMenuKeyboard)
-    }
-  }
-}
-
-const showFeed = async (ctx: TelegrafContext) => {
-  const account = await getAccountByChatId(ctx.chat.id)
-  if (account) {
-    const feeds = await getNewsFeed(account, feedOffset, 5)
-    if (feeds.length) {
-      for (let i = 0; i < feeds.length; i++) {
-        const feed = feeds[i]
-        if (i == feeds.length - 1)
-          await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), {
-            parse_mode: 'HTML',
-            reply_markup: loadMoreFeed
-          })
-        else
-          await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), { parse_mode: 'HTML' })
-      }
-      feedOffset += 5
-    } else {
-      feedOffset = 0
-    }
-  }
-}

@@ -19,7 +19,21 @@ export const createMessageForNotifs = (date: string, account: string, msg: strin
 }
 
 export const createMessageForFeeds = (link: string, account: string, spaceName: string, date: string) => {
-	return link + " by " + account + " in space " + spaceName + "\n" + date
+	return link + "\n" + "Posted by " + account + " in space " + spaceName + "\n" + date
+}
+
+export const createMessageForProfile = (
+	accountName: string,
+	balance: string,
+	reputation: string,
+	followings: string,
+	followers: string
+) => {
+	return "Name: " + accountName
+	+ "\nBalance: " + balance
+	+ "\nReputation: " + reputation
+	+ "\nMy followings: " + followings
+	+ "\nMy followers: " + followers
 }
 
 export const getAccountName = async (account: string): Promise<string> => {

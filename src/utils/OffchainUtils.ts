@@ -74,3 +74,15 @@ export const getAccountByChatId = async (chatId: number) => {
     console.error(`Failed to get account for chat id: ${chatId}`, err)
   }
 }
+
+export const getTelegramChat = async (account: string, chatId: number) => {
+  try {
+    const res = await axios.get(getOffchainUrl(`/getTelegramChat?account=${account}&chatId=${chatId}`))
+    console.log(res)
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
+  }
+}

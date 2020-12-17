@@ -1,9 +1,11 @@
+import { ApiPromise } from '@polkadot/api';
 import { SubsocialIpfsApi } from '@subsocial/api/ipfs'
 import { SubsocialApi } from '@subsocial/api/subsocial'
 import { SubsocialSubstrateApi } from '@subsocial/api/substrate'
 import { Api } from '@subsocial/api/substrateConnect'
 import { ipfsNodeUrl, offchainUrl, substrateUrl } from '../env';
 
+export let api: ApiPromise
 export let subsocial: SubsocialApi
 export let substrate: SubsocialSubstrateApi
 export let ipfs: SubsocialIpfsApi
@@ -11,7 +13,7 @@ export let ipfs: SubsocialIpfsApi
 export const resolveSubsocialApi = async () => {
 
 	if (!subsocial) {
-		const api = await Api.connect(substrateUrl)
+		api = await Api.connect(substrateUrl)
 		subsocial = new SubsocialApi({
 			substrateApi: api,
 			ipfsNodeUrl,

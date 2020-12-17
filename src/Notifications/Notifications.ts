@@ -1,9 +1,16 @@
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { EventsName } from '@subsocial/types';
-import { Activity } from '../utils/OffchainUtils';
+import { Activity, getAccountByChatId, getNotifications } from '../utils/OffchainUtils';
 import message from './message';
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
 import { getAccountName, createHrefForAccount, createMessageForNotifs, createHrefForSpace, createHrefForPost } from '../utils/utils';
+import { Markup } from 'telegraf';
+import { mainMenuKeyboard } from '../index';
+import { TelegrafContext } from 'telegraf/typings/context';
+
+const loadMoreNotif = Markup.inlineKeyboard([
+	Markup.callbackButton('Load more', 'loadMoreNotifs'),
+  ])
 
 export const createNotificationMessage = async (activities: Activity[]) => {
 	let res: string[] = []
@@ -88,3 +95,34 @@ const getPostPreviewWithMaps = async (account: string, postId: string, msg: stri
 
 	return createMessageForNotifs(formatDate, createHrefForAccount(account, accountName), msg, url)
 }
+
+export const showNotification = async (ctx: TelegrafContext, notifOffset: number) => {
+	const account = await getAccountByChatId(ctx.chat.id)
+	if (account) {
+	  const notifs = await getNotifications(account, notifOffset, 5)
+	  const notifsMessage = await createNotificationMessage(notifs)
+
+	  if (notifsMessage.length) {
+		for (let i = 0; i < notifsMessage.length; i++) {
+		  const notification = notifsMessage[i]
+
+		  if (i == notifsMessage.length - 1)
+			await ctx.telegram.sendMessage(ctx.chat.id, notification, {
+			  parse_mode: 'HTML',
+			  disable_web_page_preview: true,
+			  reply_markup: loadMoreNotif
+			})
+		  else
+			await ctx.telegram.sendMessage(ctx.chat.id, notification, {
+			  parse_mode: 'HTML',
+			  disable_web_page_preview: true
+			})
+		}
+		notifOffset += 5
+	  } else {
+		notifOffset = 0
+		ctx.reply("That's all folks", mainMenuKeyboard)
+	  }
+	}
+	return notifOffset
+  }
