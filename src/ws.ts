@@ -1,12 +1,11 @@
 import { w3cwebsocket as W3CWebSocket, IMessageEvent } from "websocket";
 import { offchainWs } from './env';
 import { newLogger } from '@subsocial/utils';
-import { Activity } from './utils/OffchainUtils';
+import { Activity, getAccountByChatId, getTelegramChat } from './utils/OffchainUtils';
 import { createNotificationMessage } from './Notifications/Notifications';
 import { bot } from './index';
 import { getPostPreview } from './Feed/Feed';
-
-type Type = 'notification' | 'feed'
+import { Type } from './utils/utils';
 
 type OffchainMessage = {
 	activity: Activity,
@@ -24,7 +23,6 @@ export const resloveWebSocketConnection = () => {
 	return socket
 }
 
-// export const useTelegraSocket = () => {
 resloveWebSocketConnection()
 socket.onopen = () => {
 	log.info('Connected to Notifications Counter Web Socket')
@@ -35,14 +33,17 @@ socket.onclose = () => {
 };
 socket.onmessage = async (msg: IMessageEvent) => {
 	const { activity, chatId, type } = JSON.parse(msg.data) as OffchainMessage
-	if (type === 'notification') {
+	const account = await getAccountByChatId(chatId)
+	if (!account) return
+
+	const { push_notifs, push_feeds } = await getTelegramChat(account, chatId)
+
+	if (type === 'notification' && push_notifs) {
 		const notifMessage = await createNotificationMessage([activity])
 		bot.telegram.sendMessage(Number(chatId), notifMessage[0], { parse_mode: 'HTML', disable_web_page_preview: true })
-	} else {
+	} else if (type == 'feed' && push_feeds) {
 		const feedMessage = await getPostPreview(activity)
-    bot.telegram.sendMessage(chatId, feedMessage, { parse_mode: 'HTML' })
+		bot.telegram.sendMessage(chatId, feedMessage, { parse_mode: 'HTML' })
 	}
 	log.info('Received a new value for unread notifications:', chatId)
 }
-
-// }

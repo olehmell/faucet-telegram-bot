@@ -6,6 +6,8 @@ import { TelegrafContext } from 'telegraf/typings/context';
 import { showNotification } from './Notifications/Notifications';
 import { resloveWebSocketConnection } from './ws';
 import { showProfile } from './Profile/Profile';
+import { showSettings } from './Settings/settings';
+import { manageSettings } from './utils/utils';
 
 const Telegraf = require('telegraf')
 const {
@@ -43,11 +45,10 @@ resloveWebSocketConnection()
 bot.hears('🔔 Notifications', async (ctx) => {
   notifOffset = 0
   notifOffset = await showNotification(ctx, notifOffset)
-
 })
 
 bot.action('loadMoreNotifs', async (ctx) => {
-  notifOffset =  await showNotification(ctx, notifOffset)
+  notifOffset = await showNotification(ctx, notifOffset)
 })
 
 bot.hears('📰 Feed', async (ctx: TelegrafContext) => {
@@ -56,12 +57,24 @@ bot.hears('📰 Feed', async (ctx: TelegrafContext) => {
 })
 
 bot.action('loadMoreFeeds', async (ctx) => {
-  feedOffset =  await showFeed(ctx, feedOffset)
+  feedOffset = await showFeed(ctx, feedOffset)
 })
 
 bot.hears('👤 Profile', async (ctx) => {
-  ctx.telegram.sendMessage(ctx.chat.id, "This will be your profile")
   await showProfile(ctx)
 })
+
+bot.hears('⚙️ Settings', async (ctx) => {
+  await showSettings(ctx)
+})
+
+bot.action('pushFeeds', async (ctx: TelegrafContext) => {
+  await manageSettings(ctx, 'feed')
+})
+
+bot.action('pushNotifs', async (ctx: TelegrafContext) => {
+  await manageSettings(ctx, 'notification')
+})
+
 
 bot.launch()

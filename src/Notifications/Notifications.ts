@@ -9,7 +9,7 @@ import { mainMenuKeyboard } from '../index';
 import { TelegrafContext } from 'telegraf/typings/context';
 
 const loadMoreNotif = Markup.inlineKeyboard([
-	Markup.callbackButton('Load more', 'loadMoreNotifs'),
+	Markup.callbackButton('Load more', 'loadMoreNotifs')
   ])
 
 export const createNotificationMessage = async (activities: Activity[]) => {
@@ -121,7 +121,7 @@ export const showNotification = async (ctx: TelegrafContext, notifOffset: number
 		notifOffset += 5
 	  } else {
 		notifOffset = 0
-		ctx.reply("That's all folks", mainMenuKeyboard)
+		ctx.reply("No more notification🤷‍♂️", mainMenuKeyboard)
 	  }
 	}
 	return notifOffset

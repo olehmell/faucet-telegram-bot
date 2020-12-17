@@ -14,11 +14,11 @@ export class SceneGenerator {
 			const isValidAccount = checkAddress(message, 28)
 			if (isValidAccount[0]) {
 				const telegramChat = await getTelegramChat(message, ctx.chat.id)
-				console.log(telegramChat)
 				if(!telegramChat) {
 					await setTelegramData(message.toString(), ctx.chat.id)
 				}
 				await ctx.reply(`Thank you account confirmed`, mainMenuKeyboard)
+				ctx.chat.first_name = message
 				await ctx.scene.leave()
 			} else {
 				await ctx.reply(`Opps! Account is not valid:`)

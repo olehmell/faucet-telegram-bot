@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { newLogger} from '@subsocial/utils'
+import { newLogger } from '@subsocial/utils'
 import { Activity as OldActivity } from '@subsocial/types'
 import { offchainUrl } from '../env'
 require('dotenv').config()
@@ -11,9 +11,9 @@ export type Activity = Omit<OldActivity, 'id'> & {
 
 const log = newLogger('TelegramRequests')
 
-function getOffchainUrl (subUrl: string): string {
-    return `${offchainUrl}/v1/offchain${subUrl}`
-  }
+function getOffchainUrl(subUrl: string): string {
+  return `${offchainUrl}/v1/offchain${subUrl}`
+}
 
 const createActivitiesUrlByAddress = (address: string, entity: 'feed' | 'notifications' | 'activities') =>
   getOffchainUrl(`/${entity}/${address}`)
@@ -30,21 +30,21 @@ const axiosRequest = async (url: string) => {
 
     return res
   } catch (err) {
-      log.error('Failed request to offchain with error', err)
-      return err
+    log.error('Failed request to offchain with error', err)
+    return err
   }
 }
 
 const getActivity = async (url: string, offset: number, limit: number): Promise<Activity[]> => {
-    try {
-      const res = await axiosRequest(`${url}?offset=${offset}&limit=${limit}`)
-      const { data } = res
-      return data
-    } catch (err) {
-      log.error('Failed get activities from offchain with error', err)
-      return []
-    }
+  try {
+    const res = await axiosRequest(`${url}?offset=${offset}&limit=${limit}`)
+    const { data } = res
+    return data
+  } catch (err) {
+    log.error('Failed get activities from offchain with error', err)
+    return []
   }
+}
 
 export const getNewsFeed = async (myAddress: string, offset: number, limit: number): Promise<Activity[]> =>
   getActivity(createFeedUrlByAddress(myAddress), offset, limit)
@@ -78,7 +78,17 @@ export const getAccountByChatId = async (chatId: number) => {
 export const getTelegramChat = async (account: string, chatId: number) => {
   try {
     const res = await axios.get(getOffchainUrl(`/getTelegramChat?account=${account}&chatId=${chatId}`))
-    console.log(res)
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
+  }
+}
+
+export const updateTelegramChat = async (account: string, chatId: number, push_notifs: boolean, push_feeds: boolean) => {
+  try {
+    const res = await axios.post(getOffchainUrl(`/updateTelegramChat`), { account, chatId, push_notifs, push_feeds })
     if (res.status === 200) {
       return res.data
     }

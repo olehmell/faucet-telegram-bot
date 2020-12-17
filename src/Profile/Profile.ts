@@ -18,18 +18,19 @@ export const showProfile = async (ctx: TelegrafContext) => {
 
 	const balance = await api.derive.balances.all(account)
 	const profile = await subsocial.findProfile(account)
-	const accountName = profile.content ? profile.content.name : account
+	if (!profile) return
+
+	const accountName = profile.content?.name ? profile.content.name : ""
 	const { reputation, followers_count, following_accounts_count } = profile.struct
 
-	console.log(followers_count.toString(), following_accounts_count.toString())
 	const freeBalance = formatBalance(balance.freeBalance.toString())
-
 	const message = createMessageForProfile(
 		accountName,
+		account,
 		freeBalance,
 		reputation.toString(),
 		following_accounts_count.toString(),
 		followers_count.toString()
 	)
-	ctx.telegram.sendMessage(ctx.chat.id, message, {reply_markup: profileButton(account)})
+	ctx.telegram.sendMessage(ctx.chat.id, message, { reply_markup: profileButton(account) })
 }

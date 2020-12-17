@@ -11,10 +11,11 @@ import {
 import { Activity, getAccountByChatId, getNewsFeed } from '../utils/OffchainUtils';
 import { TelegrafContext } from 'telegraf/typings/context';
 import { Markup } from 'telegraf';
+import { mainMenuKeyboard } from '../index';
 
 const loadMoreFeed = Markup.inlineKeyboard([
 	Markup.callbackButton('Load more', 'loadMoreFeeds'),
-  ])
+])
 
 
 export const getPostPreview = async (feed: Activity): Promise<string> => {
@@ -39,22 +40,23 @@ export const getPostPreview = async (feed: Activity): Promise<string> => {
 export const showFeed = async (ctx: TelegrafContext, feedOffset: number) => {
 	const account = await getAccountByChatId(ctx.chat.id)
 	if (account) {
-	  const feeds = await getNewsFeed(account, feedOffset, 5)
-	  if (feeds.length) {
-		for (let i = 0; i < feeds.length; i++) {
-		  const feed = feeds[i]
-		  if (i == feeds.length - 1)
-			await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), {
-			  parse_mode: 'HTML',
-			  reply_markup: loadMoreFeed
-			})
-		  else
-			await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), { parse_mode: 'HTML' })
+		const feeds = await getNewsFeed(account, feedOffset, 5)
+		if (feeds.length) {
+			for (let i = 0; i < feeds.length; i++) {
+				const feed = feeds[i]
+				if (i == feeds.length - 1)
+					await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), {
+						parse_mode: 'HTML',
+						reply_markup: loadMoreFeed
+					})
+				else
+					await ctx.telegram.sendMessage(ctx.chat.id, await getPostPreview(feed), { parse_mode: 'HTML' })
+			}
+			feedOffset += 5
+		} else {
+			feedOffset = 0
+			ctx.reply("No more feeds🤷‍♂️", mainMenuKeyboard)
 		}
-		feedOffset += 5
-	  } else {
-		feedOffset = 0
-	  }
 	}
 	return feedOffset
-  }
+}
