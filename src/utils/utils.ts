@@ -1,9 +1,8 @@
 import { appsUrl } from '../env'
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
-import { TelegrafContext } from 'telegraf/typings/context';
-import { message, settingsKeyboard } from '../Settings/settings';
-import { updateTelegramChat, getTelegramChat, getAccountByChatId } from './OffchainUtils';
+import U32 from '@polkadot/types/primitive/U32';
+import U16 from '@polkadot/types/primitive/U16';
 
 export type Type = 'notification' | 'feed'
 
@@ -31,16 +30,17 @@ export const createMessageForProfile = (
 	accountName: string,
 	address: string,
 	balance: string,
-	reputation: string,
-	followings: string,
-	followers: string
+	reputation: U32,
+	followings: U16,
+	followers: U32
 ) => {
-	return "Name: " + accountName
-		+ "\nAddress: " + address
-		+ "\nBalance: " + balance
-		+ "\nReputation: " + reputation
-		+ "\nMy followings: " + followings
-		+ "\nMy followers: " + followers
+	return "<b>Account</b>"
+		+ "\n\n🙂Name: " + accountName
+		+ "\n🔑Address: " + address
+		+ "\n💰Balance: " + balance
+		+ "\n📈Reputation: " + reputation
+		+ "\n⬆️My followings: " + followings
+		+ "\n⬇️My followers: " + followers
 }
 
 export const getAccountName = async (account: string): Promise<string> => {
@@ -61,20 +61,4 @@ export const getSpaceName = async (spaceId: SpaceId): Promise<string> => {
 		return name
 	}
 	else return ''
-}
-
-export const manageSettings = async (ctx: TelegrafContext, type: Type) => {
-	const messageId = ctx.update.callback_query.message.message_id
-	const account = await getAccountByChatId(ctx.chat.id)
-	if (!account) return
-
-	const telegramChat = await getTelegramChat(account, ctx.chat.id)
-	let { push_notifs, push_feeds } = telegramChat
-
-	if(type == "notification") push_notifs = !push_notifs
-	else push_feeds = !push_feeds
-
-	const updated = await updateTelegramChat(account, ctx.chat.id, push_notifs, push_feeds)
-
-	ctx.telegram.editMessageText(ctx.chat.id, messageId, '', message, { reply_markup: settingsKeyboard(updated.push_notifs, updated.push_feeds) })
 }

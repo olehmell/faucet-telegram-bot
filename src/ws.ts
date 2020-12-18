@@ -1,11 +1,12 @@
 import { w3cwebsocket as W3CWebSocket, IMessageEvent } from "websocket";
 import { offchainWs } from './env';
 import { newLogger } from '@subsocial/utils';
-import { Activity, getAccountByChatId, getTelegramChat } from './utils/OffchainUtils';
-import { createNotificationMessage } from './Notifications/Notifications';
+import { getAccountByChatId, getTelegramChat } from './utils/OffchainUtils';
+import { createNotificationsMessage } from './Notifications/Notifications';
 import { bot } from './index';
 import { getPostPreview } from './Feed/Feed';
 import { Type } from './utils/utils';
+import { Activity } from '@subsocial/types';
 
 type OffchainMessage = {
 	activity: Activity,
@@ -39,7 +40,7 @@ socket.onmessage = async (msg: IMessageEvent) => {
 	const { push_notifs, push_feeds } = await getTelegramChat(account, chatId)
 
 	if (type === 'notification' && push_notifs) {
-		const notifMessage = await createNotificationMessage([activity])
+		const notifMessage = await createNotificationsMessage([activity])
 		bot.telegram.sendMessage(Number(chatId), notifMessage[0], { parse_mode: 'HTML', disable_web_page_preview: true })
 	} else if (type == 'feed' && push_feeds) {
 		const feedMessage = await getPostPreview(activity)

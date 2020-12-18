@@ -1,13 +1,8 @@
 import axios from 'axios'
 import { newLogger } from '@subsocial/utils'
-import { Activity as OldActivity } from '@subsocial/types'
+import { Activity } from '@subsocial/types'
 import { offchainUrl } from '../env'
 require('dotenv').config()
-
-export type Activity = Omit<OldActivity, 'id'> & {
-  block_number: string,
-  event_index: number
-}
 
 const log = newLogger('TelegramRequests')
 
@@ -94,5 +89,16 @@ export const updateTelegramChat = async (account: string, chatId: number, push_n
     }
   } catch (err) {
     console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
+  }
+}
+
+export const changeCurrentAccount = async (account: string, chatId: number) => {
+  try {
+    const res = await axios.post(getOffchainUrl(`/changeCurrentAccount`), { account, chatId })
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to chenge current account for chat id: ${chatId}`, err)
   }
 }

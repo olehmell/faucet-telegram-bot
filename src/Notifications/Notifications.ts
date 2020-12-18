@@ -1,6 +1,6 @@
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
-import { EventsName } from '@subsocial/types';
-import { Activity, getAccountByChatId, getNotifications } from '../utils/OffchainUtils';
+import { EventsName, Activity } from '@subsocial/types';
+import { getAccountByChatId, getNotifications } from '../utils/OffchainUtils';
 import message from './message';
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
 import { getAccountName, createHrefForAccount, createMessageForNotifs, createHrefForSpace, createHrefForPost } from '../utils/utils';
@@ -9,10 +9,10 @@ import { mainMenuKeyboard } from '../index';
 import { TelegrafContext } from 'telegraf/typings/context';
 
 const loadMoreNotif = Markup.inlineKeyboard([
-	Markup.callbackButton('Load more', 'loadMoreNotifs')
+	Markup.callbackButton('🔔 Load more', 'loadMoreNotifs')
   ])
 
-export const createNotificationMessage = async (activities: Activity[]) => {
+export const createNotificationsMessage = async (activities: Activity[]) => {
 	let res: string[] = []
 	for (let index = 0; index < activities.length; index++) {
 		const activity = activities[index];
@@ -28,15 +28,15 @@ const getActivityPreview = async (activity: Activity, msg: string): Promise<stri
 
 	switch (eventName) {
 		case 'AccountFollowed': return getAccountPreview(account, following_id, msg, date)
-		case 'SpaceFollowed': return getSpacePreviewWithMaps(account, space_id, msg, date)
-		case 'SpaceCreated': return getSpacePreviewWithMaps(account, space_id, msg, date)
-		case 'CommentCreated': return getCommentPreviewWithMaps(account, comment_id, msg, date)
-		case 'CommentReplyCreated': return getCommentPreviewWithMaps(account, comment_id, msg, date)
-		case 'PostShared': return getPostPreviewWithMaps(account, post_id, msg, date)
-		case 'CommentShared': return getCommentPreviewWithMaps(account, comment_id, msg, date)
-		case 'PostReactionCreated': return getPostPreviewWithMaps(account, post_id, msg, date)
-		case 'CommentReactionCreated': return getCommentPreviewWithMaps(account, comment_id, msg, date)
-		case 'PostCreated': return getPostPreviewWithMaps(account, post_id, msg, date)
+		case 'SpaceFollowed': return getSpacePreview(account, space_id, msg, date)
+		case 'SpaceCreated': return getSpacePreview(account, space_id, msg, date)
+		case 'CommentCreated': return getCommentPreview(account, comment_id, msg, date)
+		case 'CommentReplyCreated': return getCommentPreview(account, comment_id, msg, date)
+		case 'PostShared': return getPostPreview(account, post_id, msg, date)
+		case 'CommentShared': return getCommentPreview(account, comment_id, msg, date)
+		case 'PostReactionCreated': return getPostPreview(account, post_id, msg, date)
+		case 'CommentReactionCreated': return getCommentPreview(account, comment_id, msg, date)
+		case 'PostCreated': return getPostPreview(account, post_id, msg, date)
 		default: return undefined
 	}
 }
@@ -52,7 +52,7 @@ const getAccountPreview = async (account: string, following_id: string, msg: str
 	return createMessageForNotifs(formatDate, accountUrl, msg, followingUrl)
 }
 
-const getSpacePreviewWithMaps = async (account: string, spaceId: string, msg: string, date: string): Promise<string> => {
+const getSpacePreview = async (account: string, spaceId: string, msg: string, date: string): Promise<string> => {
 	const subsocial = await resolveSubsocialApi()
 	const formatDate = new Date(date).toUTCString()
 	const space = await subsocial.findSpace({ id: spaceId as unknown as SpaceId })
@@ -65,7 +65,7 @@ const getSpacePreviewWithMaps = async (account: string, spaceId: string, msg: st
 	return createMessageForNotifs(formatDate, createHrefForAccount(account, accountName), msg, url)
 }
 
-const getCommentPreviewWithMaps = async (account: string, comment_id: string, msg: string, date: string): Promise<string> => {
+const getCommentPreview = async (account: string, comment_id: string, msg: string, date: string): Promise<string> => {
 	const subsocial = await resolveSubsocialApi()
 	const formatDate = new Date(date).toUTCString()
 
@@ -81,7 +81,7 @@ const getCommentPreviewWithMaps = async (account: string, comment_id: string, ms
 	return createMessageForNotifs(formatDate, createHrefForAccount(account, accountName), msg, url)
 }
 
-const getPostPreviewWithMaps = async (account: string, postId: string, msg: string, date: string): Promise<string> => {
+const getPostPreview = async (account: string, postId: string, msg: string, date: string): Promise<string> => {
 	const subsocial = await resolveSubsocialApi()
 	const formatDate = new Date(date).toUTCString()
 
@@ -100,7 +100,7 @@ export const showNotification = async (ctx: TelegrafContext, notifOffset: number
 	const account = await getAccountByChatId(ctx.chat.id)
 	if (account) {
 	  const notifs = await getNotifications(account, notifOffset, 5)
-	  const notifsMessage = await createNotificationMessage(notifs)
+	  const notifsMessage = await createNotificationsMessage(notifs)
 
 	  if (notifsMessage.length) {
 		for (let i = 0; i < notifsMessage.length; i++) {
@@ -121,7 +121,7 @@ export const showNotification = async (ctx: TelegrafContext, notifOffset: number
 		notifOffset += 5
 	  } else {
 		notifOffset = 0
-		ctx.reply("No more notification🤷‍♂️", mainMenuKeyboard)
+		ctx.reply("No more notifications🤷‍♂️", mainMenuKeyboard)
 	  }
 	}
 	return notifOffset

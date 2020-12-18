@@ -8,15 +8,15 @@ import {
 	createHrefForSpace,
 	getSpaceName
 } from '../utils/utils';
-import { Activity, getAccountByChatId, getNewsFeed } from '../utils/OffchainUtils';
+import { getAccountByChatId, getNewsFeed } from '../utils/OffchainUtils';
 import { TelegrafContext } from 'telegraf/typings/context';
 import { Markup } from 'telegraf';
 import { mainMenuKeyboard } from '../index';
+import { Activity } from '@subsocial/types';
 
 const loadMoreFeed = Markup.inlineKeyboard([
-	Markup.callbackButton('Load more', 'loadMoreFeeds'),
+	Markup.callbackButton('📰 Load more', 'loadMoreFeeds'),
 ])
-
 
 export const getPostPreview = async (feed: Activity): Promise<string> => {
 	const subsocial = await resolveSubsocialApi()
@@ -55,7 +55,7 @@ export const showFeed = async (ctx: TelegrafContext, feedOffset: number) => {
 			feedOffset += 5
 		} else {
 			feedOffset = 0
-			ctx.reply("No more feeds🤷‍♂️", mainMenuKeyboard)
+			ctx.reply("No more feed🤷‍♂️", mainMenuKeyboard)
 		}
 	}
 	return feedOffset

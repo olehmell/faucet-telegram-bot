@@ -1,5 +1,5 @@
 import { TelegrafContext } from 'telegraf/typings/context';
-import { getAccountByChatId } from '../utils/OffchainUtils';
+import { getAccountByChatId, changeCurrentAccount } from '../utils/OffchainUtils';
 import { resolveSubsocialApi, api } from '../Substrate/subsocialConnect';
 import { createMessageForProfile } from '../utils/utils';
 import { formatBalance } from '@polkadot/util';
@@ -7,9 +7,19 @@ import { Markup } from 'telegraf';
 import { appsUrl } from '../env';
 
 const profileButton = (account: string) => Markup.inlineKeyboard([
-	Markup.urlButton('View on site', `${appsUrl}/accounts/${account}`),
-	Markup.urlButton('Edit profile', `${appsUrl}/accounts/edit`)
+	[
+		Markup.urlButton('View on site', `${appsUrl}/accounts/${account}`),
+		Markup.urlButton('Edit profile', `${appsUrl}/accounts/edit`)
+	],
+	[
+		Markup.callbackButton('Switch account', 'switchAccount'),
+		Markup.callbackButton('Sign out', 'signOut')
+	]
 ])
+
+const signIn = Markup.keyboard([
+	Markup.callbackButton('Sign in', 'signIn')
+]).resize()
 
 export const showProfile = async (ctx: TelegrafContext) => {
 	const subsocial = await resolveSubsocialApi()
@@ -20,7 +30,7 @@ export const showProfile = async (ctx: TelegrafContext) => {
 	const profile = await subsocial.findProfile(account)
 	if (!profile) return
 
-	const accountName = profile.content?.name ? profile.content.name : ""
+	const accountName = profile.content?.name || ''
 	const { reputation, followers_count, following_accounts_count } = profile.struct
 
 	const freeBalance = formatBalance(balance.freeBalance.toString())
@@ -28,9 +38,20 @@ export const showProfile = async (ctx: TelegrafContext) => {
 		accountName,
 		account,
 		freeBalance,
-		reputation.toString(),
-		following_accounts_count.toString(),
-		followers_count.toString()
+		reputation,
+		following_accounts_count,
+		followers_count
 	)
-	ctx.telegram.sendMessage(ctx.chat.id, message, { reply_markup: profileButton(account) })
+	ctx.telegram.sendMessage(ctx.chat.id, message, { parse_mode: 'HTML', reply_markup: profileButton(account) })
+}
+
+export const switchAccount = async (ctx) => {
+	await changeCurrentAccount('', ctx.chat.id)
+	ctx.scene.enter('address')
+}
+
+export const signOut = async (ctx) => {
+	const chatId = ctx.chat.id
+	await changeCurrentAccount('', chatId)
+	await ctx.telegram.sendMessage(chatId, 'You are sign out', { reply_markup: signIn})
 }
