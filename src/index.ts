@@ -1,53 +1,91 @@
-import Telegraf from 'telegraf'
-import * as Extra from 'telegraf/extra'
-import * as Markup from 'telegraf/markup'
-import { Api } from '@subsocial/api/substrateConnect';
-import { registry } from '@subsocial/types/substrate/registry'
-import { ApiPromise } from '@polkadot/api';
-import { formatBalance } from '@polkadot/util';
-import AccountId from '@polkadot/types/generic/AccountId';
+import { Keyboard } from 'telegram-keyboard'
+import { SceneGenerator } from './scenes';
+import { TOKEN } from './env';
+import { showFeed } from './Feed/Feed';
+import { TelegrafContext } from 'telegraf/typings/context';
+import { showNotification } from './Notifications/Notifications';
+import { resloveWebSocketConnection } from './ws';
+import { showProfile, switchAccount, signOut } from './Profile/Profile';
+import { showSettings, manageSettings } from './Settings/settings';
 
-let api: ApiPromise;
+const Telegraf = require('telegraf')
+const {
+  Stage,
+  session
+} = Telegraf
 
-require('dotenv').config()
+export const bot = new Telegraf(TOKEN)
 
-const TOKEN = process.env.TOKEN
-const SUBSTRATE_URL = process.env.SUBSTRATE_URL
-const bot = new Telegraf(TOKEN)
+// bot.use(Telegraf.log())
 
-bot.use(Telegraf.log())
+let notifOffset = 0
+let feedOffset = 0
 
-bot.command('start', (ctx) => {
-  return ctx.reply('Share your phone:', Extra.markup((markup) => {
-    return markup.resize()
-      .keyboard([
-        markup.contactRequestButton('Send contact')
-      ])
-  }))
+export const mainMenuKeyboard = Keyboard.make([
+  ['📰 Feed', '🔔 Notifications'],
+  ['👤 Account', '⚙️ Settings']
+]).reply()
+
+const scenesGen = new SceneGenerator()
+const getBalance = scenesGen.getBalanceScene()
+
+const stage = new Stage([getBalance])
+
+bot.use(session())
+bot.use(stage.middleware())
+
+bot.start(async (ctx) => {
+  await ctx.telegram.sendMessage(ctx.chat.id, 'Hi in Subsocial telegram bot👋')
+  await ctx.scene.enter('address')
 })
 
-bot.hears(/[A-Za-z\d@$!%*?&_-]{48,48}$/, async ctx => {
-  const message = ctx.message.text
-  try {
-    const address = new AccountId(registry, message)
-    console.log('Address:', address)
-    const ballance = await api.derive.balances.all(address)
-    ctx.reply(`Your balance: ${formatBalance(ballance.freeBalance.toString())}`)
-  } catch (err) {
-    ctx.reply(`Opps! Some problem: ${err}`)
-  }  
+resloveWebSocketConnection()
+
+bot.hears('🔔 Notifications', async (ctx) => {
+  notifOffset = 0
+  notifOffset = await showNotification(ctx, notifOffset)
 })
 
-bot.on('contact', ctx => ctx.reply('Thanks. What is your account address?', Extra.markup(
-     Markup.keyboard([])
-      .oneTime()
-      .resize()
-      .extra()
-  )))
+bot.action('loadMoreNotifs', async (ctx) => {
+  notifOffset = await showNotification(ctx, notifOffset)
+})
 
-const main = async () => {
-  api = await Api.connect(SUBSTRATE_URL)
-  bot.launch()
-}
+bot.hears('📰 Feed', async (ctx: TelegrafContext) => {
+  feedOffset = 0
+  feedOffset = await showFeed(ctx, feedOffset)
+})
 
-main()
+bot.action('loadMoreFeeds', async (ctx) => {
+  feedOffset = await showFeed(ctx, feedOffset)
+})
+
+bot.hears('👤 Account', async (ctx) => {
+  await showProfile(ctx)
+})
+
+bot.action('switchAccount', async (ctx: TelegrafContext) => {
+  await switchAccount(ctx)
+})
+
+bot.action('signOut', async (ctx: TelegrafContext) => {
+  await signOut(ctx)
+})
+
+bot.hears('⚙️ Settings', async (ctx) => {
+  await showSettings(ctx)
+})
+
+bot.action('pushFeeds', async (ctx: TelegrafContext) => {
+  await manageSettings(ctx, 'feed')
+})
+
+bot.action('pushNotifs', async (ctx: TelegrafContext) => {
+  await manageSettings(ctx, 'notification')
+})
+
+bot.hears('Sign in', async (ctx) => {
+  ctx.scene.enter('address')
+})
+
+
+bot.launch()
