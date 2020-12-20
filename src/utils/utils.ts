@@ -35,12 +35,12 @@ export const createMessageForProfile = (
 	followers: U32
 ) => {
 	return "<b>Account</b>"
-		+ "\n\n🙂Name: " + accountName
-		+ "\n🔑Address: " + address
-		+ "\n💰Balance: " + balance
-		+ "\n📈Reputation: " + reputation
-		+ "\n⬆️My followings: " + followings
-		+ "\n⬇️My followers: " + followers
+		+ "\n\n🙂 Name: " + accountName
+		+ "\n🔑 Address: " + address
+		+ "\n💰 Balance: " + balance
+		+ "\n📈 Reputation: " + reputation
+		+ "\n⬆️ My followings: " + followings
+		+ "\n⬇️ My followers: " + followers
 }
 
 export const getAccountName = async (account: string): Promise<string> => {
