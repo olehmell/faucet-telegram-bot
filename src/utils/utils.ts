@@ -1,8 +1,9 @@
 import { appsUrl } from '../env'
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
-import U32 from '@polkadot/types/primitive/U32';
-import U16 from '@polkadot/types/primitive/U16';
+import { newLogger } from '@subsocial/utils';
+
+export const log = newLogger("Telegram")
 
 export type Type = 'notification' | 'feed'
 
@@ -30,9 +31,9 @@ export const createMessageForProfile = (
 	accountName: string,
 	address: string,
 	balance: string,
-	reputation: U32,
-	followings: U16,
-	followers: U32
+	reputation: number,
+	followings: number,
+	followers: number
 ) => {
 	return "<b>Account</b>"
 		+ "\n\n🙂 Name: " + accountName

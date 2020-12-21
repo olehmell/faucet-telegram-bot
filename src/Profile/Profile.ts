@@ -28,10 +28,11 @@ export const showProfile = async (ctx: TelegrafContext) => {
 
 	const balance = await api.derive.balances.all(account)
 	const profile = await subsocial.findProfile(account)
-	if (!profile) return
 
-	const accountName = profile.content?.name || ''
-	const { reputation, followers_count, following_accounts_count } = profile.struct
+	const accountName = profile?.content?.name || ''
+	const reputation = profile?.struct.reputation.toNumber() || 0
+	const followers_count = profile?.struct.followers_count.toNumber() || 0
+	const following_accounts_count = profile?.struct.following_accounts_count.toNumber() || 0
 
 	const freeBalance = formatBalance(balance.freeBalance.toString())
 	const message = createMessageForProfile(

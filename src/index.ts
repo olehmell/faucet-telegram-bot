@@ -7,6 +7,7 @@ import { showNotification } from './Notifications/Notifications';
 import { resloveWebSocketConnection } from './ws';
 import { showProfile, switchAccount, signOut } from './Profile/Profile';
 import { showSettings, manageSettings } from './Settings/settings';
+import { log } from './utils/utils';
 
 const Telegraf = require('telegraf')
 const {
@@ -15,6 +16,10 @@ const {
 } = Telegraf
 
 export const bot = new Telegraf(TOKEN)
+
+bot.catch((err, ctx) => {
+  log.error(`Ooops, encountered an error for ${ctx.updateType}`, err)
+})
 
 // bot.use(Telegraf.log())
 
@@ -36,6 +41,7 @@ bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
   await ctx.telegram.sendMessage(ctx.chat.id, 'Hi in Subsocial telegram bot👋')
+
   await ctx.scene.enter('address')
 })
 
@@ -85,6 +91,10 @@ bot.action('pushNotifs', async (ctx: TelegrafContext) => {
 
 bot.hears('Sign in', async (ctx) => {
   ctx.scene.enter('address')
+})
+
+bot.on('new_chat_members', async (ctx) => {
+  ctx.telegram.leaveChat(ctx.chat.id)
 })
 
 

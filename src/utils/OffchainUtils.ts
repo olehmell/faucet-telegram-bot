@@ -102,3 +102,14 @@ export const changeCurrentAccount = async (account: string, chatId: number) => {
     console.error(`Failed to chenge current account for chat id: ${chatId}`, err)
   }
 }
+
+export const updateLastPush = async (account: string, chatId: number, blockNumber: string, eventIndex: number) => {
+  try {
+    const res = await axios.post(getOffchainUrl(`/updateLastPush`), { account, chatId, blockNumber, eventIndex })
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to chenge current account for chat id: ${chatId}`, err)
+  }
+}
