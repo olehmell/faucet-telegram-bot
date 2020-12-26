@@ -6,7 +6,7 @@ import registry from '@subsocial/types/substrate/registry'
 const Scene = require('telegraf/scenes/base')
 
 export class SceneGenerator {
-	getBalanceScene() {
+	getAccountScene() {
 		const scene = new Scene('address')
 		scene.enter(async (ctx) => {
 			await ctx.reply("Write your address on Subsocial: ")

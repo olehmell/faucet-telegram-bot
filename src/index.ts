@@ -32,7 +32,7 @@ export const mainMenuKeyboard = Keyboard.make([
 ]).reply()
 
 const scenesGen = new SceneGenerator()
-const getBalance = scenesGen.getBalanceScene()
+const getBalance = scenesGen.getAccountScene()
 
 const stage = new Stage([getBalance])
 
