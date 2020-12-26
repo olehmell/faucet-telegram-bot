@@ -3,7 +3,7 @@ import { Markup } from 'telegraf';
 import { getAccountByChatId, getTelegramChat, updateTelegramChat } from '../utils/OffchainUtils';
 import { Type } from '../utils/utils';
 
-export const message = '<b>Settings</b>'
+export const message = '<b>⚙️ Settings</b>'
 	+ '\n\nYou can turn on/off push notifications about activity related to your account.'
 
 export const settingsKeyboard = (isOnNotifs: boolean, isOnFeed: boolean) => {

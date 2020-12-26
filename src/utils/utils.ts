@@ -35,7 +35,7 @@ export const createMessageForProfile = (
 	followings: number,
 	followers: number
 ) => {
-	return "<b>Account</b>"
+	return "<b>👤 Account</b>"
 		+ "\n\n🙂 Name: " + accountName
 		+ "\n🔑 Address: " + address
 		+ "\n💰 Balance: " + balance
