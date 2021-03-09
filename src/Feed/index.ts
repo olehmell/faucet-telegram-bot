@@ -7,8 +7,8 @@ import {
 	getAccountName,
 	createHrefForSpace,
 	getSpaceName
-} from '../utils/utils';
-import { getAccountByChatId, getNewsFeed } from '../utils/OffchainUtils';
+} from '../utils';
+import { getAccountByChatId, getNewsFeed } from '../utils/offchainUtils';
 import { TelegrafContext } from 'telegraf/typings/context';
 import { Markup } from 'telegraf';
 import { mainMenuKeyboard } from '../index';

@@ -1,9 +1,9 @@
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { EventsName, Activity } from '@subsocial/types';
-import { getAccountByChatId, getNotifications } from '../utils/OffchainUtils';
+import { getAccountByChatId, getNotifications } from '../utils/offchainUtils';
 import message from './message';
 import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
-import { getAccountName, createHrefForAccount, createMessageForNotifs, createHrefForSpace, createHrefForPost } from '../utils/utils';
+import { getAccountName, createHrefForAccount, createMessageForNotifs, createHrefForSpace, createHrefForPost } from '../utils';
 import { Markup } from 'telegraf';
 import { mainMenuKeyboard } from '../index';
 import { TelegrafContext } from 'telegraf/typings/context';

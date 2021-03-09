@@ -1,10 +1,10 @@
 import { TelegrafContext } from 'telegraf/typings/context';
-import { getAccountByChatId, changeCurrentAccount } from '../utils/OffchainUtils';
+import { getAccountByChatId, changeCurrentAccount } from '../utils/offchainUtils';
 import { resolveSubsocialApi, api } from '../Substrate/subsocialConnect';
-import { createMessageForProfile } from '../utils/utils';
+import { createMessageForProfile } from '../utils';
 import { formatBalance } from '@polkadot/util';
 import { Markup } from 'telegraf';
-import { appsUrl } from '../env';
+import { appsUrl } from '../utils/env';
 
 const profileButton = (account: string) => Markup.inlineKeyboard([
 	[

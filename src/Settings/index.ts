@@ -1,7 +1,7 @@
 import { TelegrafContext } from 'telegraf/typings/context';
 import { Markup } from 'telegraf';
-import { getAccountByChatId, getTelegramChat, updateTelegramChat } from '../utils/OffchainUtils';
-import { Type } from '../utils/utils';
+import { getAccountByChatId, getTelegramChat, updateTelegramChat } from '../utils/offchainUtils';
+import { Type } from '../utils';
 
 export const message = '<b>⚙️ Settings</b>'
 	+ '\n\nYou can turn on/off push notifications about activity related to your account.'
