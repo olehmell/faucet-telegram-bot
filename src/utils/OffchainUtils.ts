@@ -50,7 +50,7 @@ export const getNotifications = async (myAddress: string, offset: number, limit:
 
 export const setTelegramData = async (account: string, chatId: number) => {
   try {
-    const res = await axios.post(getOffchainUrl(`/notifications/setTelegramData`), { account, chatId })
+    const res = await axios.post(getOffchainUrl(`/telegram//setTelegramData`), { account, chatId })
     if (res.status !== 200) {
       console.warn('Failed to insert telegram data for account:', account, 'res.status:', res.status)
     }
@@ -59,42 +59,9 @@ export const setTelegramData = async (account: string, chatId: number) => {
   }
 }
 
-export const getAccountByChatId = async (chatId: number) => {
-  try {
-    const res = await axios.get(getOffchainUrl(`/notifications/getAccountByChatId/${chatId}`))
-    if (res.status === 200) {
-      return res.data
-    }
-  } catch (err) {
-    console.error(`Failed to get account for chat id: ${chatId}`, err)
-  }
-}
-
-export const getTelegramChat = async (account: string, chatId: number) => {
-  try {
-    const res = await axios.get(getOffchainUrl(`/getTelegramChat?account=${account}&chatId=${chatId}`))
-    if (res.status === 200) {
-      return res.data
-    }
-  } catch (err) {
-    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
-  }
-}
-
-export const updateTelegramChat = async (account: string, chatId: number, push_notifs: boolean, push_feeds: boolean) => {
-  try {
-    const res = await axios.post(getOffchainUrl(`/updateTelegramChat`), { account, chatId, push_notifs, push_feeds })
-    if (res.status === 200) {
-      return res.data
-    }
-  } catch (err) {
-    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
-  }
-}
-
 export const changeCurrentAccount = async (account: string, chatId: number) => {
   try {
-    const res = await axios.post(getOffchainUrl(`/changeCurrentAccount`), { account, chatId })
+    const res = await axios.post(getOffchainUrl(`/telegram/setCurrentAccount`), { account, chatId })
     if (res.status === 200) {
       return res.data
     }
@@ -105,11 +72,44 @@ export const changeCurrentAccount = async (account: string, chatId: number) => {
 
 export const updateLastPush = async (account: string, chatId: number, blockNumber: string, eventIndex: number) => {
   try {
-    const res = await axios.post(getOffchainUrl(`/updateLastPush`), { account, chatId, blockNumber, eventIndex })
+    const res = await axios.post(getOffchainUrl(`/telegram/setLastPush`), { account, chatId, blockNumber, eventIndex })
     if (res.status === 200) {
       return res.data
     }
   } catch (err) {
-    console.error(`Failed to chenge current account for chat id: ${chatId}`, err)
+    console.error(`Failed to update last push for chat id: ${chatId}`, err)
+  }
+}
+
+export const getAccountByChatId = async (chatId: number) => {
+  try {
+    const res = await axios.get(getOffchainUrl(`/telegram/getAccountByChatId/${chatId}`))
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to get account for chat id: ${chatId}`, err)
+  }
+}
+
+export const getTelegramChat = async (account: string, chatId: number) => {
+  try {
+    const res = await axios.get(getOffchainUrl(`/telegram/getTelegramChat?account=${account}&chatId=${chatId}`))
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
+  }
+}
+
+export const updateTelegramChat = async (account: string, chatId: number, push_notifs: boolean, push_feeds: boolean) => {
+  try {
+    const res = await axios.post(getOffchainUrl(`/telegram/updateTelegramChat`), { account, chatId, push_notifs, push_feeds })
+    if (res.status === 200) {
+      return res.data
+    }
+  } catch (err) {
+    console.error(`Failed to get data for telegram for chat id: ${chatId}`, err)
   }
 }
