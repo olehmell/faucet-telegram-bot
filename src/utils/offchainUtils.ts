@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { newLogger } from '@subsocial/utils'
 import { Activity } from '@subsocial/types'
-import { offchainUrl } from '../env'
+import { offchainUrl } from './env'
 require('dotenv').config()
 
 const log = newLogger('TelegramRequests')

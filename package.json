@@ -1,12 +1,9 @@
 {
-  "name": "faucet-telegram-bot",
-  "version": "0.0.1",
-  "description": "This telegram UI for Subsocial faucet bot",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/olehmell/faucet-telegram-bot.git"
-  },
+  "name": "subsocial-telegram-bot",
+  "version": "0.1.0",
+  "description": "Subsocial feed and notifications telegram bot",
+  "author": "DappForce contributors",
+  "license": "GPL-3.0-only",
   "keywords": [
     "subsocial",
     "faucet",
@@ -15,18 +12,17 @@
     "tokens",
     "smn"
   ],
-  "bugs": {
-    "url": "https://github.com/olehmell/faucet-telegram-bot/issues"
-  },
-  "homepage": "https://github.com/olehmell/faucet-telegram-bot#readme",
-  "resolutions": {
-    "@polkadot/types": "1.28.1",
-    "@polkadot/api": "1.28.1"
+  "scripts": {
+    "start": "node build/src/index.js",
+    "build": "tsc -p tsconfig.release.json",
+    "build:watch": "tsc -w -p tsconfig.release.json",
+    "lint": "tsc --noEmit && eslint '*/**/*.{ts,tsx}' --quiet --fix",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@subsocial/api": "0.4.23",
-    "@subsocial/types": "^0.4.26",
-    "@subsocial/utils": "^0.4.25",
+    "@subsocial/api": "^0.4.33",
+    "@subsocial/types": "^0.4.33",
+    "@subsocial/utils": "^0.4.38",
     "@types/axios": "^0.14.0",
     "@types/bn.js": "^4.11.5",
     "@types/cors": "^2.8.6",
@@ -41,18 +37,9 @@
     "nodemon": "^1.18.9",
     "typescript": "^3.8.3"
   },
-  "scripts": {
-    "start": "node build/src/index.js",
-    "build": "tsc -p tsconfig.release.json",
-    "build:watch": "tsc -w -p tsconfig.release.json",
-    "lint": "tsc --noEmit && eslint '*/**/*.{ts,tsx}' --quiet --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "DappForce contributors",
-  "license": "GPL-3.0-only",
   "dependencies": {
-    "@polkadot/api": "1.28.1",
-    "@polkadot/types": "1.28.1",
+    "@polkadot/api": "^3.8.1",
+    "@polkadot/types": "^3.8.1",
     "bn.js": "^4.11.8",
     "concurrently": "^4.1.2",
     "cors": "^2.8.5",

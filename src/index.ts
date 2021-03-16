@@ -1,13 +1,13 @@
 import { Keyboard } from 'telegram-keyboard'
 import { SceneGenerator } from './scenes';
-import { TOKEN } from './env';
-import { showFeed } from './Feed/Feed';
+import { TOKEN } from './utils/env';
+import { showFeed } from './Feed';
 import { TelegrafContext } from 'telegraf/typings/context';
-import { showNotification } from './Notifications/Notifications';
-import { resloveWebSocketConnection } from './ws';
-import { showProfile, switchAccount, signOut } from './Profile/Profile';
-import { showSettings, manageSettings } from './Settings/settings';
-import { log } from './utils/utils';
+import { showNotification } from './Notifications';
+import { resloveWebSocketConnection } from './webSocket';
+import { showProfile, switchAccount, signOut } from './Profile';
+import { showSettings, manageSettings } from './Settings';
+import { log } from './utils';
 
 const Telegraf = require('telegraf')
 const {

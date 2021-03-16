@@ -1,11 +1,11 @@
 import { w3cwebsocket as W3CWebSocket, IMessageEvent } from "websocket";
-import { offchainWs } from './env';
+import { offchainWs } from './utils/env';
 import { newLogger } from '@subsocial/utils';
-import { getAccountByChatId, getTelegramChat, updateLastPush } from './utils/OffchainUtils';
-import { createNotificationsMessage } from './Notifications/Notifications';
+import { getAccountByChatId, getTelegramChat, updateLastPush } from './utils/offchainUtils';
+import { createNotificationsMessage } from './Notifications';
 import { bot } from './index';
-import { getPostPreview } from './Feed/Feed';
-import { Type } from './utils/utils';
+import { getPostPreview } from './Feed';
+import { Type } from './utils';
 import { Activity } from '@subsocial/types';
 
 type OffchainMessage = {

@@ -1,5 +1,5 @@
 import { mainMenuKeyboard } from './index';
-import { setTelegramData, changeCurrentAccount } from './utils/OffchainUtils';
+import { setTelegramData, changeCurrentAccount } from './utils/offchainUtils';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { GenericAccountId } from '@polkadot/types';
 import registry from '@subsocial/types/substrate/registry'
