@@ -1,6 +1,6 @@
 import { TelegrafContext } from 'telegraf/typings/context';
 import { getAccountByChatId, changeCurrentAccount } from '../utils/offchainUtils';
-import { resolveSubsocialApi, api } from '../Substrate/subsocialConnect';
+import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
 import { createMessageForProfile } from '../utils';
 import { formatBalance } from '@polkadot/util';
 import { Markup } from 'telegraf';
@@ -26,6 +26,7 @@ export const showProfile = async (ctx: TelegrafContext) => {
 
 	const account = await getAccountByChatId(ctx.chat.id)
 
+	const api = await subsocial.substrate.api
 	const balance = await api.derive.balances.all(account)
 	const profile = await subsocial.findProfile(account)
 
@@ -34,7 +35,7 @@ export const showProfile = async (ctx: TelegrafContext) => {
 	const followers_count = profile?.struct.followers_count.toNumber() || 0
 	const following_accounts_count = profile?.struct.following_accounts_count.toNumber() || 0
 
-	const freeBalance = formatBalance(balance.freeBalance.toString())
+	const freeBalance = formatBalance((balance as any).freeBalance.toString())
 	const message = createMessageForProfile(
 		accountName,
 		account,
