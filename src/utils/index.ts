@@ -40,7 +40,7 @@ export const createMessageForProfile = (
 		+ "\n🔑 Address: " + address
 		+ "\n💰 Balance: " + balance
 		// + "\n📈 Reputation: " + reputation
-		+ "\n⬆️ My followings: " + followings
+		+ "\n⬆️ My following: " + followings
 		+ "\n⬇️ My followers: " + followers
 }
 
