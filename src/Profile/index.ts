@@ -31,7 +31,7 @@ export const showProfile = async (ctx: TelegrafContext) => {
 	const profile = await subsocial.findProfile(account)
 
 	const accountName = profile?.content?.name || ''
-	const reputation = profile?.struct.reputation.toNumber() || 0
+	// const reputation = profile?.struct.reputation.toNumber() || 0
 	const followers_count = profile?.struct.followers_count.toNumber() || 0
 	const following_accounts_count = profile?.struct.following_accounts_count.toNumber() || 0
 
@@ -40,7 +40,7 @@ export const showProfile = async (ctx: TelegrafContext) => {
 		accountName,
 		account,
 		freeBalance,
-		reputation,
+		// reputation,
 		following_accounts_count,
 		followers_count
 	)
