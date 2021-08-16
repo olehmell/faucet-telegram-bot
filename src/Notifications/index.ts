@@ -2,7 +2,7 @@ import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
 import { EventsName, Activity } from '@subsocial/types';
 import { getAccountByChatId, getNotifications } from '../utils/offchainUtils';
 import message from './message';
-import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { resolveSubsocialApi } from '../utils/subsocialConnect'
 import { getAccountName, createHrefForAccount, createMessageForNotifs, createHrefForSpace, createHrefForPost } from '../utils';
 import { Markup } from 'telegraf';
 import { mainMenuKeyboard } from '../index';

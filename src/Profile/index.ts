@@ -1,6 +1,6 @@
 import { TelegrafContext } from 'telegraf/typings/context';
 import { getAccountByChatId, changeCurrentAccount } from '../utils/offchainUtils';
-import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { resolveSubsocialApi } from '../utils/subsocialConnect'
 import { createMessageForProfile } from '../utils';
 import { formatBalance } from '@polkadot/util';
 import { Markup } from 'telegraf';

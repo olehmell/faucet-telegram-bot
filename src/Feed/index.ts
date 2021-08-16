@@ -1,5 +1,5 @@
 import { PostId, SpaceId } from '@subsocial/types/substrate/interfaces';
-import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { resolveSubsocialApi } from '../utils/subsocialConnect'
 import {
 	createHrefForPost,
 	createMessageForFeeds,

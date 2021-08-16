@@ -1,5 +1,5 @@
 import { appsUrl } from './env'
-import { resolveSubsocialApi } from '../Substrate/subsocialConnect';
+import { resolveSubsocialApi } from './subsocialConnect'
 import { SpaceId } from '@subsocial/types/substrate/interfaces';
 import { newLogger } from '@subsocial/utils';
 
