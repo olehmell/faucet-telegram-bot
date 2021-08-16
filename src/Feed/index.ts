@@ -55,7 +55,7 @@ export const showFeed = async (ctx: TelegrafContext, feedOffset: number) => {
 			feedOffset += 5
 		} else {
 			feedOffset = 0
-			ctx.reply("No more feed🤷‍♂️", mainMenuKeyboard)
+			ctx.reply("Your feed has ended for now 🤷‍♂️", mainMenuKeyboard)
 		}
 	}
 	return feedOffset

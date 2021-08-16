@@ -20,12 +20,12 @@ export class SceneGenerator {
 				await setTelegramData(addressEncoded, chatId)
 				await changeCurrentAccount(addressEncoded, chatId)
 
-				await ctx.reply(`Thank you account confirmed`, mainMenuKeyboard)
+				await ctx.reply(`Thank you, the account accepted.`, mainMenuKeyboard)
 
 				ctx.chat.first_name = message
 				await ctx.scene.leave()
 			} catch {
-				await ctx.reply(`Opps! Account is not valid:`)
+				await ctx.reply(`Oops! Account is not valid:`)
 				ctx.scene.reenter()
 			}
 		})

@@ -18,7 +18,7 @@ const {
 export const bot = new Telegraf(TOKEN)
 
 bot.catch((err, ctx) => {
-  log.error(`Ooops, encountered an error for ${ctx.updateType}`, err)
+  log.error(`Oops, encountered an error for ${ctx.updateType}`, err)
 })
 
 // bot.use(Telegraf.log())
@@ -40,7 +40,7 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
-  await ctx.telegram.sendMessage(ctx.chat.id, 'Hi in Subsocial telegram bot👋')
+  await ctx.telegram.sendMessage(ctx.chat.id, 'Hi, this is Subsocial telegram bot 👋\nHappy to see you here :)')
 
   await ctx.scene.enter('address')
 })

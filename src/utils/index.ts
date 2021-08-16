@@ -32,7 +32,7 @@ export const createMessageForProfile = (
 	address: string,
 	balance: string,
 	// reputation: number,
-	followings: number,
+	followees: number,
 	followers: number
 ) => {
 	return "<b>👤 Account</b>"
@@ -40,7 +40,7 @@ export const createMessageForProfile = (
 		+ "\n🔑 Address: " + address
 		+ "\n💰 Balance: " + balance
 		// + "\n📈 Reputation: " + reputation
-		+ "\n⬆️ My following: " + followings
+		+ "\n⬆️ My followees: " + followees
 		+ "\n⬇️ My followers: " + followers
 }
 

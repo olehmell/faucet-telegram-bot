@@ -8,7 +8,7 @@ import { appsUrl } from '../utils/env';
 
 const profileButton = (account: string) => Markup.inlineKeyboard([
 	[
-		Markup.urlButton('View on site', `${appsUrl}/accounts/${account}`),
+		Markup.urlButton('View on Web dapp', `${appsUrl}/accounts/${account}`),
 		Markup.urlButton('Edit profile', `${appsUrl}/accounts/edit`)
 	],
 	[
@@ -55,5 +55,5 @@ export const switchAccount = async (ctx) => {
 export const signOut = async (ctx) => {
 	const chatId = ctx.chat.id
 	await changeCurrentAccount('', chatId)
-	await ctx.telegram.sendMessage(chatId, 'You are sign out', { reply_markup: signIn})
+	await ctx.telegram.sendMessage(chatId, 'You have successfully signed out 👍', { reply_markup: signIn})
 }
