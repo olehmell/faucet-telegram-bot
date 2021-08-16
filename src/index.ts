@@ -1,34 +1,34 @@
 import { Keyboard } from 'telegram-keyboard'
-import { SceneGenerator } from './scenes';
-import { TOKEN } from './utils/env';
-import { showFeed } from './Feed';
-import { TelegrafContext } from 'telegraf/typings/context';
-import { showNotification } from './Notifications';
-import { resloveWebSocketConnection } from './webSocket';
-import { showProfile, switchAccount, signOut } from './Profile';
-import { showSettings, manageSettings } from './Settings';
-import { log } from './utils';
+import { SceneGenerator } from './scenes'
+import { TOKEN } from './utils/env'
+import { showFeed } from './Feed'
+import { TelegrafContext } from 'telegraf/typings/context'
+import { showNotification } from './Notifications'
+import { resolveWebSocketConnection } from './webSocket'
+import { showProfile, signOut, switchAccount } from './Profile'
+import { manageSettings, showSettings } from './Settings'
+import { log } from './utils'
 
 const Telegraf = require('telegraf')
 const {
-  Stage,
-  session
+    Stage,
+    session
 } = Telegraf
 
 export const bot = new Telegraf(TOKEN)
 
 bot.catch((err, ctx) => {
-  log.error(`Oops, encountered an error for ${ctx.updateType}`, err)
+    log.error(`Oops, encountered an error for ${ctx.updateType}`, err)
 })
 
 // bot.use(Telegraf.log())
 
-let notifOffset = 0
+let notifsOffset = 0
 let feedOffset = 0
 
 export const mainMenuKeyboard = Keyboard.make([
-  ['📰 Feed', '🔔 Notifications'],
-  ['👤 Account', '⚙️ Settings']
+    ['📰 Feed', '🔔 Notifications'],
+    ['👤 Account', '⚙️ Settings']
 ]).reply()
 
 const scenesGen = new SceneGenerator()
@@ -40,62 +40,57 @@ bot.use(session())
 bot.use(stage.middleware())
 
 bot.start(async (ctx) => {
-  await ctx.telegram.sendMessage(ctx.chat.id, 'Hi, this is Subsocial telegram bot 👋\nHappy to see you here :)')
+    await ctx.telegram.sendMessage(ctx.chat.id, 'Hi, this is Subsocial telegram bot 👋\nHappy to see you here :)')
 
-  await ctx.scene.enter('address')
+    await ctx.scene.enter('address')
 })
 
-resloveWebSocketConnection()
+resolveWebSocketConnection()
 
 bot.hears('🔔 Notifications', async (ctx) => {
-  notifOffset = 0
-  notifOffset = await showNotification(ctx, notifOffset)
+    notifsOffset = 0
+    notifsOffset = await showNotification(ctx, notifsOffset)
 })
 
 bot.action('loadMoreNotifs', async (ctx) => {
-  notifOffset = await showNotification(ctx, notifOffset)
+    notifsOffset = await showNotification(ctx, notifsOffset)
 })
 
 bot.hears('📰 Feed', async (ctx: TelegrafContext) => {
-  feedOffset = 0
-  feedOffset = await showFeed(ctx, feedOffset)
+    feedOffset = 0
+    feedOffset = await showFeed(ctx, feedOffset)
 })
 
 bot.action('loadMoreFeeds', async (ctx) => {
-  feedOffset = await showFeed(ctx, feedOffset)
+    feedOffset = await showFeed(ctx, feedOffset)
 })
 
 bot.hears('👤 Account', async (ctx) => {
-  await showProfile(ctx)
+    await showProfile(ctx)
 })
 
 bot.action('switchAccount', async (ctx: TelegrafContext) => {
-  await switchAccount(ctx)
+    await switchAccount(ctx)
 })
 
 bot.action('signOut', async (ctx: TelegrafContext) => {
-  await signOut(ctx)
+    await signOut(ctx)
 })
 
 bot.hears('⚙️ Settings', async (ctx) => {
-  await showSettings(ctx)
+    await showSettings(ctx)
 })
 
 bot.action('pushFeeds', async (ctx: TelegrafContext) => {
-  await manageSettings(ctx, 'feed')
+    await manageSettings(ctx, 'feed')
 })
 
 bot.action('pushNotifs', async (ctx: TelegrafContext) => {
-  await manageSettings(ctx, 'notification')
+    await manageSettings(ctx, 'notification')
 })
 
 bot.hears('Sign in', async (ctx) => {
-  ctx.scene.enter('address')
+    ctx.scene.enter('address')
 })
-
-bot.on('new_chat_members', async (ctx) => {
-  ctx.telegram.leaveChat(ctx.chat.id)
-})
-
 
 bot.launch()
